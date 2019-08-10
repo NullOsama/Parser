@@ -9,23 +9,26 @@ namespace Parser
     class JsonFile : IFile
     {
         public string Path { get; set; }
-        public string ParsedText { get; private set; }
 
         public JsonFile(string path)
         {
             Path = path ?? throw new ArgumentNullException(nameof(path));
-            ParsedText = null;
         }
 
         public string ParseFile()
         {
+            // Reads The File Text And Then Prse It To Json Object.
             var jsonObject = JObject.Parse(File.ReadAllText(Path));
 
-            var Objects = jsonObject.ToObject<Dictionary<string, object>>();
+            // Convert The Json Object To Dictionary Struct.
+            var ObjectsDic = jsonObject.ToObject<Dictionary<string, object>>();
 
 
+            // Pstr: Parsed String.
             StringBuilder Pstr = new StringBuilder("");
-            foreach (var obj in Objects)
+
+            // The First Loop Iterates Over The First Level And The Second One Iterates Over The Attributes Of Each One.
+            foreach (var obj in ObjectsDic)
             {
                 Pstr.Append($"type: {obj.Key}\n----------\n");
                 foreach (var attribute in ((JObject)obj.Value).ToObject<Dictionary<string, object>>())
@@ -35,8 +38,7 @@ namespace Parser
                 Pstr.Append('\n');
             }
 
-            ParsedText = Pstr.ToString();
-            return ParsedText;
+            return Pstr.ToString();
         }
     }
 }
